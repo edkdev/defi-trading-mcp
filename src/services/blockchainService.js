@@ -27,7 +27,7 @@ export class BlockchainService {
   }
 
   initializeProviders() {
-    // Default RPC URLs for all 0x-supported chains (public/free RPCs)
+    // Default RPC URLs for all supported chains (public/free RPCs)
     const defaultRpcUrls = {
       1: "https://rpc.flashbots.net", // Ethereum
       10: "https://mainnet.optimism.io", // Optimism

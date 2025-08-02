@@ -456,7 +456,7 @@ _Use `get_supported_chains` for the complete current list._
 
 ### **Join Our Community**
 
-- **[Telegram Group](https://t.me/defi_trading_mcp)** - Get help, share strategies, and connect with other traders
+- **[Telegram Group](https://t.me/+fC8GWO3zBe04NTY0)** - Get help, share strategies, and connect with other traders
 - **[GitHub Issues](https://github.com/edkdev/defi-trading-mcp/issues)** - Report bugs and request features
 - **[GitHub Discussions](https://github.com/edkdev/defi-trading-mcp/discussions)** - General questions and community chat
 

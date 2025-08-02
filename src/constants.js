@@ -26,7 +26,7 @@ export const TOOL_NAMES = {
   GET_NEW_POOLS: "get_new_pools",
   SEARCH_POOLS: "search_pools",
   
-  // Additional CoinGecko API Tools (from coingeckoendpoints-2.txt)
+  // Additional CoinGecko API Tools 
   GET_TOP_POOLS_BY_TOKEN: "get_top_pools_by_token",
   GET_TOKEN_DATA: "get_token_data",
   GET_MULTIPLE_TOKENS_DATA: "get_multiple_tokens_data",
@@ -35,7 +35,7 @@ export const TOOL_NAMES = {
   GET_POOL_OHLCV: "get_pool_ohlcv",
   GET_POOL_TRADES: "get_pool_trades",
   
-  // Portfolio API Tools (Alchemy)
+  // Portfolio API Tools
   GET_PORTFOLIO_TOKENS: "get_portfolio_tokens",
   GET_PORTFOLIO_BALANCES: "get_portfolio_balances",
   GET_PORTFOLIO_TRANSACTIONS: "get_portfolio_transactions",
@@ -44,3 +44,6 @@ export const TOOL_NAMES = {
   CONVERT_WEI_TO_FORMATTED: "convert_wei_to_formatted",
   CONVERT_FORMATTED_TO_WEI: "convert_formatted_to_wei"
 };
+
+// Aggregator Server Configuration
+export const AGGREGATOR_SERVER_URL = "http://44.252.136.98";

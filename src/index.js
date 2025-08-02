@@ -6,7 +6,7 @@ import {
   ListToolsRequestSchema,
   CallToolRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
-import { TOOL_NAMES } from "./constants.js";
+import { TOOL_NAMES, AGGREGATOR_SERVER_URL } from "./constants.js";
 import { ToolService } from "./toolService.js";
 import { ethers } from "ethers";
 import fs from "fs";
@@ -53,12 +53,11 @@ if (args.includes("--create-wallet")) {
   process.exit(0);
 }
 
-// Load environment variables (similar to ElevenLabs MCP pattern)
+// Load environment variables 
 const USER_PRIVATE_KEY = process.env.USER_PRIVATE_KEY;
 const USER_ADDRESS = process.env.USER_ADDRESS;
 const COINGECKO_API_KEY = process.env.COINGECKO_API_KEY;
 const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY;
-const AGGREGATOR_SERVER_URL = "http://44.252.136.98";
 
 // Initialize tool service with environment variables
 const toolService = new ToolService(
