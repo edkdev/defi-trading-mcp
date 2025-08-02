@@ -1,0 +1,56 @@
+{
+  "type": "module",
+  "name": "defi-trading-mcp",
+  "version": "1.0.0",
+  "description": "Transform your AI assistant into an autonomous crypto trading agent with real-time market analysis, portfolio management, and seamless trade execution across 17+ blockchains",
+  "main": "src/index.js",
+  "bin": {
+    "defi-trading-mcp": "src/index.js"
+  },
+  "files": [
+    "src/",
+    "setup.js",
+    ".env.example",
+    "README.md"
+  ],
+  "homepage": "https://github.com/edkdev/defi-trading-mcp#readme",
+  "bugs": {
+    "url": "https://github.com/edkdev/defi-trading-mcp/issues"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "node test.js",
+    "setup": "node setup.js",
+    "setup:dev": "node setup.js --dev"
+  },
+  "keywords": [
+    "crypto-trading",
+    "defi-trading",
+    "trading-bot",
+    "AI-agent",
+    "memecoin-trader",
+    "defi",
+    "swap",
+    "mcp",
+    "protocol",
+    "gasless",
+    "portfolio",
+    "ethereum",
+    "blockchain"
+  ],
+  "author": "Ed",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/edkdev/defi-trading-mcp.git"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.3",
+    "dotenv": "^16.4.7",
+    "ethers": "^6.15.0",
+    "node-fetch": "^3.3.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
