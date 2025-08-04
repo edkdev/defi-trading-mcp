@@ -261,6 +261,62 @@ Then add the following.
 }
 ```
 
+### **Cursor**
+
+**One-Click Install (Recommended)**
+
+Click the button below to automatically install the DeFi Trading MCP in Cursor:
+
+[![Add DeFi Trading MCP to Cursor](https://img.shields.io/badge/Add%20to%20Cursor-Install%20MCP-blue?style=for-the-badge&logo=cursor)](cursor://anysphere.cursor-deeplink/mcp/install?name=defi-trading&config=eyJjb21tYW5kIjoibnB4IiwiYXJncyI6WyJkZWZpLXRyYWRpbmctbWNwIl0sImVudiI6eyJVU0VSX1BSSVZBVEVfS0VZIjoieW91cl9wcml2YXRlX2tleV9oZXJlIiwiVVNFUl9BRERSRVNTIjoiMHhZb3VyV2FsbGV0QWRkcmVzcyIsIkNPSU5HRUNLT19BUElfS0VZIjoiQ0cteW91cl9jb2luZ2Vja29fYXBpX2tleSIsIkFMQ0hFTVlfQVBJX0tFWSI6InlvdXJfYWxjaGVteV9hcGlfa2V5In19)
+
+> **Note**: You'll need to update the environment variables with your actual keys after installation.
+
+**Manual Setup**
+
+**Step 1: Install the MCP**
+
+```bash
+npm install -g defi-trading-mcp
+```
+
+**Step 2: Add to Cursor Configuration**
+
+1. Open Cursor
+2. Go to **Settings** → **Extensions** → **MCP Servers**
+3. Add a new server with the following configuration:
+
+```json
+{
+  "defi-trading": {
+    "command": "npx",
+    "args": ["defi-trading-mcp"],
+    "env": {
+      "USER_PRIVATE_KEY": "your_private_key_here",
+      "USER_ADDRESS": "0xYourWalletAddress",
+      "COINGECKO_API_KEY": "CG-your_coingecko_api_key",
+      "ALCHEMY_API_KEY": "your_alchemy_api_key"
+    }
+  }
+}
+```
+
+**Step 3: Configure Environment Variables**
+
+Replace the placeholder values with your actual credentials:
+
+- `USER_PRIVATE_KEY`: Your wallet's private key
+- `USER_ADDRESS`: Your wallet address  
+- `COINGECKO_API_KEY`: Your CoinGecko API key ([Get one here](./gecko.md))
+- `ALCHEMY_API_KEY`: Your Alchemy API key (optional)
+
+**Step 4: Start Trading**
+
+Open Cursor and start using the DeFi Trading Agent:
+
+```
+"Get me a quote for 0.1 ETH to USDC on Base chain"
+```
+
 ### Other MCP Clients
 
 For other MCP clients like Github Copilot(mcp.json), Gemini Cli (settings.json), find equivalent file and use the same pattern with environment variables:

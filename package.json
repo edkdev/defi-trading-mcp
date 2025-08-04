@@ -42,7 +42,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/edkdev/defi-trading-mcp.git"
+    "url": "git+https://github.com/edkdev/defi-trading-mcp.git"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.3",
