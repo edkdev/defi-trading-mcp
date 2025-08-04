@@ -1,7 +1,7 @@
 {
   "type": "module",
   "name": "defi-trading-mcp",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "Transform your AI assistant into an autonomous crypto trading agent with real-time market analysis, portfolio management, and seamless trade execution across 17+ blockchains",
   "main": "src/index.js",
   "bin": {
