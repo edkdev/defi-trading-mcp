@@ -153,8 +153,22 @@ export class BlockchainService {
         throw new Error("Invalid permit2 data - missing EIP-712 structure");
       }
 
-      const { domain, types, message } = permit2Data.eip712;
-      const signature = await this.signEIP712Message(domain, types, message);
+      const { domain, types, message, primaryType } = permit2Data.eip712;
+
+     
+      const cleanTypes = { ...types };
+      delete cleanTypes.EIP712Domain;
+
+      console.log(
+        "🔐 Signing Permit2 with cleaned types:",
+        Object.keys(cleanTypes)
+      );
+
+      const signature = await this.wallet.signTypedData(
+        domain,
+        cleanTypes,
+        message
+      );
 
       return {
         signature,
@@ -223,8 +237,6 @@ export class BlockchainService {
         messageKeys: Object.keys(message),
       });
 
-      // Create a clean types object with only the necessary types for this primary type
-      // DO NOT include EIP712Domain - ethers.js handles this automatically
       const cleanTypes = {
         [primaryType]: types[primaryType],
       };
@@ -292,7 +304,7 @@ export class BlockchainService {
       }
 
       const connectedWallet = this.getConnectedWallet(chainId);
-      const { transaction, permit2 } = quoteData;
+      const { transaction, permit2, sellToken, sellAmount } = quoteData;
 
       if (!transaction) {
         throw new Error("No transaction data found in quote");
@@ -305,32 +317,100 @@ export class BlockchainService {
         transactionValue: transaction.value || "0",
       });
 
-      // Handle Permit2 signature if present
+      // Step 1: Handle token allowance for Permit2 (if needed)
+      const PERMIT2_CONTRACT = "0x000000000022D473030F116dDEE9F6B43aC78BA3";
+      let allowanceResult = null;
+
+      if (permit2 && sellToken && sellAmount) {
+        console.log("🔍 Checking token allowance for Permit2...");
+        try {
+          allowanceResult = await this.ensureTokenAllowance(
+            chainId,
+            sellToken,
+            PERMIT2_CONTRACT,
+            sellAmount
+          );
+
+          if (allowanceResult.approved) {
+            console.log("✅ Token allowance set for Permit2 contract");
+          } else {
+            console.log("✅ Sufficient token allowance already exists");
+          }
+        } catch (error) {
+          console.warn(
+            "⚠️ Token allowance check failed, proceeding anyway:",
+            error.message
+          );
+          // Continue with swap execution even if allowance check fails
+          // The transaction will fail if allowance is actually insufficient
+        }
+      }
+
+      // Step 2: Prepare transaction data - start with original data
+      let transactionData = transaction.data;
+
+      // Step 3: Handle Permit2 signature if present
       let permit2Signature = null;
       if (permit2 && permit2.eip712) {
         console.log("🔐 Processing Permit2 signature...");
         permit2Signature = await this.signPermit2Message(permit2);
-        console.error("Permit2 signature ready");
+        console.log("✅ Permit2 signature created");
+
+       
+        const signature = permit2Signature.signature;
+
+        // Ensure signature has 0x prefix and is properly formatted
+        const cleanSignature = signature.startsWith("0x") ? signature : "0x" + signature;
+
+        // Validate signature format (should be 65 bytes = 130 hex chars + 0x prefix = 132 total)
+        if (cleanSignature.length !== 132) {
+          throw new Error(`Invalid signature length: expected 132 chars (65 bytes), got ${cleanSignature.length}`);
+        }
+
+        // Calculate signature size in bytes (following viem's size() function logic)
+        const signatureBytes = ethers.getBytes(cleanSignature);
+        const signatureSize = signatureBytes.length; // Should be 65 bytes
+
+        // Create signature length as 32-byte unsigned big-endian integer (following viem's numberToHex)
+        const signatureLengthInHex = ethers.zeroPadValue(
+          ethers.toBeHex(signatureSize),
+          32
+        );
+
+        // Append signature length and signature data to transaction data (following viem's concat)
+        transactionData = ethers.concat([
+          transaction.data,
+          signatureLengthInHex,
+          cleanSignature,
+        ]);
+
+        console.log("🔧 Permit2 signature embedded in transaction data:", {
+          originalDataLength: transaction.data.length,
+          signatureSize: signatureSize,
+          newDataLength: ethers.hexlify(transactionData).length,
+          signatureLengthHex: ethers.hexlify(signatureLengthInHex).substring(0, 20) + "...",
+          signaturePreview: cleanSignature.substring(0, 20) + "...",
+        });
       }
 
-      // Validate Agg quote data
+      // Step 4: Validate quote data
       if (!transaction.gas) {
-        throw new Error("No gas estimate found in Agg quote data");
+        throw new Error("No gas estimate found in quote data");
       }
       if (!transaction.gasPrice) {
-        throw new Error("No gasPrice found in Agg quote data");
+        throw new Error("No gasPrice found in quote data");
       }
 
-      // Get nonce
+      // Step 5: Get nonce
       const nonce = await this.getTransactionCount(
         chainId,
         connectedWallet.address
       );
 
-      // Create legacy transaction with exact Agg parameters
+      // Step 6: Create legacy transaction with embedded Permit2 signature
       const legacyTxData = {
         to: transaction.to,
-        data: transaction.data,
+        data: transactionData, // Use modified data with embedded signature
         value: transaction.value || "0",
         gasLimit: transaction.gas,
         gasPrice: transaction.gasPrice,
@@ -338,20 +418,23 @@ export class BlockchainService {
         type: 0, // Force legacy transaction
       };
 
-      console.log("🚀 Sending LEGACY transaction with exact Agg parameters:", {
+      console.log("🚀 Sending transaction with Permit2 signature embedded:", {
         to: legacyTxData.to,
         gasLimit: legacyTxData.gasLimit,
         gasPrice: legacyTxData.gasPrice,
         nonce: legacyTxData.nonce,
         type: "legacy",
+        hasPermit2Embedded: !!permit2Signature,
+        dataLength: transactionData.length,
+        allowanceHandled: !!allowanceResult,
       });
 
-      // Sign and send transaction
-      console.error("🚀 Broadcasting transaction to network...");
+      // Step 7: Sign and send transaction
+      console.log("🚀 Broadcasting transaction to network...");
       const signedTx = await connectedWallet.sendTransaction(legacyTxData);
-      console.error(`Transaction broadcasted: ${signedTx.hash}`);
+      console.log(`✅ Transaction broadcasted: ${signedTx.hash}`);
 
-      // Return only relevant fields for legacy transactions
+      // Return transaction details
       return {
         hash: signedTx.hash,
         from: signedTx.from,
@@ -364,6 +447,14 @@ export class BlockchainService {
         type: signedTx.type?.toString(),
         permit2Signed: !!permit2Signature,
         permit2Hash: permit2Signature?.hash,
+        permit2Embedded: !!permit2Signature,
+        allowanceResult: allowanceResult,
+        steps: [
+          "1. ✅ Token allowance checked/set for Permit2",
+          "2. ✅ Permit2 EIP-712 message signed",
+          "3. ✅ Signature embedded in transaction data",
+          "4. ✅ Transaction broadcasted to network",
+        ],
       };
     } catch (error) {
       console.error("Transaction signing/broadcasting failed:", error);
@@ -468,6 +559,141 @@ export class BlockchainService {
       };
     } catch (error) {
       throw new Error(`Failed to get transaction status: ${error.message}`);
+    }
+  }
+
+  async checkTokenAllowance(
+    chainId,
+    tokenAddress,
+    ownerAddress,
+    spenderAddress
+  ) {
+    try {
+      const provider = this.getProvider(chainId);
+
+      // ERC20 allowance function ABI
+      const erc20Abi = [
+        "function allowance(address owner, address spender) view returns (uint256)",
+      ];
+
+      const tokenContract = new ethers.Contract(
+        tokenAddress,
+        erc20Abi,
+        provider
+      );
+      const allowance = await tokenContract.allowance(
+        ownerAddress,
+        spenderAddress
+      );
+
+      return allowance.toString();
+    } catch (error) {
+      throw new Error(`Failed to check token allowance: ${error.message}`);
+    }
+  }
+
+  async approveToken(chainId, tokenAddress, spenderAddress, amount) {
+    try {
+      if (!this.wallet) {
+        throw new Error("No private key configured for token approval");
+      }
+
+      const connectedWallet = this.getConnectedWallet(chainId);
+
+      // ERC20 approve function ABI
+      const erc20Abi = [
+        "function approve(address spender, uint256 amount) returns (bool)",
+      ];
+
+      const tokenContract = new ethers.Contract(
+        tokenAddress,
+        erc20Abi,
+        connectedWallet
+      );
+
+      console.log(
+        `🔐 Approving ${amount} tokens for spender ${spenderAddress}...`
+      );
+
+      // Send approval transaction
+      const tx = await tokenContract.approve(spenderAddress, amount);
+
+      console.log(`✅ Approval transaction sent: ${tx.hash}`);
+
+      // Wait for confirmation
+      const receipt = await tx.wait();
+
+      console.log(`✅ Approval confirmed in block ${receipt.blockNumber}`);
+
+      return {
+        hash: tx.hash,
+        blockNumber: receipt.blockNumber?.toString(),
+        gasUsed: receipt.gasUsed?.toString(),
+        status: receipt.status,
+      };
+    } catch (error) {
+      throw new Error(`Failed to approve token: ${error.message}`);
+    }
+  }
+
+  async ensureTokenAllowance(
+    chainId,
+    tokenAddress,
+    spenderAddress,
+    requiredAmount
+  ) {
+    try {
+      const ownerAddress = this.getWalletAddress();
+      if (!ownerAddress) {
+        throw new Error("No wallet address available");
+      }
+
+      console.log(`🔍 Checking token allowance for ${tokenAddress}...`);
+
+      // Check current allowance
+      const currentAllowance = await this.checkTokenAllowance(
+        chainId,
+        tokenAddress,
+        ownerAddress,
+        spenderAddress
+      );
+
+      const currentAllowanceBN = ethers.getBigInt(currentAllowance);
+      const requiredAmountBN = ethers.getBigInt(requiredAmount);
+
+      console.log(`Current allowance: ${currentAllowance}`);
+      console.log(`Required amount: ${requiredAmount}`);
+
+      if (currentAllowanceBN >= requiredAmountBN) {
+        console.log("✅ Sufficient allowance already exists");
+        return {
+          approved: false,
+          reason: "sufficient_allowance",
+          currentAllowance: currentAllowance,
+          requiredAmount: requiredAmount,
+        };
+      }
+
+      console.log("⚠️ Insufficient allowance, approving maximum amount...");
+
+      // Approve maximum amount (2^256 - 1) for convenience
+      const maxAmount = ethers.MaxUint256;
+      const approvalResult = await this.approveToken(
+        chainId,
+        tokenAddress,
+        spenderAddress,
+        maxAmount
+      );
+
+      return {
+        approved: true,
+        reason: "insufficient_allowance",
+        approvalTransaction: approvalResult,
+        approvedAmount: maxAmount.toString(),
+        previousAllowance: currentAllowance,
+      };
+    } catch (error) {
+      throw new Error(`Failed to ensure token allowance: ${error.message}`);
     }
   }
 

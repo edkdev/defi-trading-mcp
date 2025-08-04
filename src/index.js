@@ -41,7 +41,9 @@ if (args.includes("--create-wallet")) {
   console.log("3. Send some ETH/tokens to your new wallet address");
   console.log("4. Start trading with your DeFi Trading Agent!");
   console.log("\n📚 For Claude Code users:");
-  console.log("Run these commands to update your configuration, for other clients just update your config with the new address and private key:");
+  console.log(
+    "Run these commands to update your configuration, for other clients just update your config with the new address and private key:"
+  );
   console.log("claude mcp remove defi-trading");
   console.log(`claude mcp add defi-trading \\`);
   console.log(`  -e USER_PRIVATE_KEY=${wallet.privateKey} \\`);
@@ -53,7 +55,7 @@ if (args.includes("--create-wallet")) {
   process.exit(0);
 }
 
-// Load environment variables 
+// Load environment variables
 const USER_PRIVATE_KEY = process.env.USER_PRIVATE_KEY;
 const USER_ADDRESS = process.env.USER_ADDRESS;
 const COINGECKO_API_KEY = process.env.COINGECKO_API_KEY;

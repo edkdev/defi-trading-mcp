@@ -29,6 +29,60 @@ Transform your AI assistant into an autonomous crypto trading agent with real-ti
 - **Transaction Simulation**: Preview trades before execution
 - **Secure Key Management**: Private keys never leave your local environment
 
+## 🎯 Starting Prompt Examples
+
+### **Simple Quote**
+
+```
+Get me a quote for 0.1 eth to usdc on Base chain.
+```
+
+### **Quote and Swap**
+
+```
+Get me a quote for 0.1 eth on ethereum chain and execute the swap.
+```
+
+### **Memecoin Opportunity Scanner**
+
+```
+"Scan for newly launched memecoins on Base with >$100K liquidity, pick one or two tokens and analyze the best entry opportunities"
+```
+
+**Advanced Analysis Process:**
+
+1. **Discovery Phase**: Uses `get_new_pools` to find tokens launched in last 24h
+2. **Volume Filtering**: Identifies pools with >$100K liquidity and high trading activity
+3. **Technical Analysis**: Pulls OHLCV data to analyze price patterns and momentum
+4. **Risk Assessment**: Evaluates liquidity depth, holder concentration, and volatility
+5. **Entry Strategy**: Determines optimal entry price, position size, and risk management
+6. **Execution**: Places gasless swap with calculated slippage and stop-loss levels
+
+**Example AI Analysis:**
+
+```
+"Found 3 promising new tokens:
+🚀 $ROCKET (0x123...): 2M volume, bullish OHLCV pattern, 85% liquidity locked
+📈 Entry: $0.0001 (current support level)
+💰 Size: 2% portfolio allocation
+🛡️ Stop: $0.000085 (-15%)
+🎯 Target: $0.00015 (+50%)
+Executing gasless swap now..."
+```
+
+### **Risk Management Agent**
+
+```
+"Monitor my portfolio and alert me if any position drops more than 15%"
+```
+
+**Agent Actions:**
+
+1. Continuously monitors portfolio values
+2. Calculates position changes
+3. Provides alerts and recommendations
+4. Can execute protective trades
+
 ## 🚀 Quick Start
 
 ### **Installation**
@@ -227,61 +281,6 @@ For other MCP clients like Github Copilot(mcp.json), Gemini Cli (settings.json),
   }
 }
 ```
-
-## 🎯 Trading Agent Examples
-
-### **Portfolio Rebalancing Agent**
-
-```
-"Check my portfolio across all chains and rebalance if ETH allocation exceeds 60%"
-```
-
-**Agent Actions:**
-
-1. Analyzes multi-chain portfolio
-2. Calculates current allocations
-3. Executes rebalancing swaps if needed
-4. Reports final allocation
-
-### **Memecoin Opportunity Scanner**
-
-```
-"Scan for newly launched memecoins on Base with >$100K liquidity and analyze the best entry opportunities"
-```
-
-**Advanced Analysis Process:**
-
-1. **Discovery Phase**: Uses `get_new_pools` to find tokens launched in last 24h
-2. **Volume Filtering**: Identifies pools with >$100K liquidity and high trading activity
-3. **Technical Analysis**: Pulls OHLCV data to analyze price patterns and momentum
-4. **Risk Assessment**: Evaluates liquidity depth, holder concentration, and volatility
-5. **Entry Strategy**: Determines optimal entry price, position size, and risk management
-6. **Execution**: Places gasless swap with calculated slippage and stop-loss levels
-
-**Example AI Analysis:**
-
-```
-"Found 3 promising new tokens:
-🚀 $ROCKET (0x123...): 2M volume, bullish OHLCV pattern, 85% liquidity locked
-📈 Entry: $0.0001 (current support level)
-💰 Size: 2% portfolio allocation
-🛡️ Stop: $0.000085 (-15%)
-🎯 Target: $0.00015 (+50%)
-Executing gasless swap now..."
-```
-
-### **Risk Management Agent**
-
-```
-"Monitor my portfolio and alert me if any position drops more than 15%"
-```
-
-**Agent Actions:**
-
-1. Continuously monitors portfolio values
-2. Calculates position changes
-3. Provides alerts and recommendations
-4. Can execute protective trades
 
 ## 🛠️ Trading Agent Tools
 
