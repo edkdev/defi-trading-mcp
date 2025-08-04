@@ -263,13 +263,20 @@ Then add the following.
 
 ### **Cursor**
 
-**One-Click Install (Recommended)**
+**Quick Setup (2 Steps)**
 
-Click the button below to automatically install the DeFi Trading MCP in Cursor:
+**Step 1: Install the package**
+```bash
+npm install -g defi-trading-mcp
+```
 
-[![Add DeFi Trading MCP to Cursor](https://img.shields.io/badge/Add%20to%20Cursor-Install%20MCP-blue?style=for-the-badge&logo=cursor)](cursor://anysphere.cursor-deeplink/mcp/install?name=defi-trading&config=eyJjb21tYW5kIjoibnB4IiwiYXJncyI6WyJkZWZpLXRyYWRpbmctbWNwIl0sImVudiI6eyJVU0VSX1BSSVZBVEVfS0VZIjoieW91cl9wcml2YXRlX2tleV9oZXJlIiwiVVNFUl9BRERSRVNTIjoiMHhZb3VyV2FsbGV0QWRkcmVzcyIsIkNPSU5HRUNLT19BUElfS0VZIjoiQ0cteW91cl9jb2luZ2Vja29fYXBpX2tleSIsIkFMQ0hFTVlfQVBJX0tFWSI6InlvdXJfYWxjaGVteV9hcGlfa2V5In19)
+**Step 2: Add to Cursor (One-Click)**
 
-> **Note**: You'll need to update the environment variables with your actual keys after installation.
+Click the button below to automatically configure the MCP in Cursor:
+
+[![Add DeFi Trading MCP to Cursor](https://img.shields.io/badge/Add%20to%20Cursor-Configure%20MCP-blue?style=for-the-badge&logo=cursor)](cursor://anysphere.cursor-deeplink/mcp/install?name=defi-trading&config=eyJjb21tYW5kIjoibnB4IiwiYXJncyI6WyJkZWZpLXRyYWRpbmctbWNwIl0sImVudiI6eyJVU0VSX1BSSVZBVEVfS0VZIjoieW91cl9wcml2YXRlX2tleV9oZXJlIiwiVVNFUl9BRERSRVNTIjoiMHhZb3VyV2FsbGV0QWRkcmVzcyIsIkNPSU5HRUNLT19BUElfS0VZIjoiQ0cteW91cl9jb2luZ2Vja29fYXBpX2tleSIsIkFMQ0hFTVlfQVBJX0tFWSI6InlvdXJfYWxjaGVteV9hcGlfa2V5In19)
+
+> **Important**: The deeplink only configures Cursor - you must install the npm package first!
 
 **Manual Setup**
 
