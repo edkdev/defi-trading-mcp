@@ -1,5 +1,7 @@
 # DeFi Trading Agent MCP Server
 
+[![smithery badge](https://smithery.ai/badge/@edkdev/defi-trading-mcp)](https://smithery.ai/server/@edkdev/defi-trading-mcp)
+
 Transform your AI assistant into an autonomous crypto trading agent with real-time market analysis, portfolio management, and seamless trade execution across 17+ blockchains.
 
 ## 🎯 Starting Prompt Examples
@@ -57,6 +59,14 @@ Executing gasless swap now..."
 4. Can execute protective trades
 
 ## 🚀 Quick Start
+
+### Installing via Smithery
+
+To install DeFi Trading Agent for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@edkdev/defi-trading-mcp):
+
+```bash
+npx -y @smithery/cli install @edkdev/defi-trading-mcp --client claude
+```
 
 ### **Installation**
 

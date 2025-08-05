@@ -1,0 +1,38 @@
+# Smithery configuration file: https://smithery.ai/docs/build/project-config
+
+startCommand:
+  type: stdio
+  commandFunction:
+    # A JS function that produces the CLI command based on the given config to start the MCP on stdio.
+    |-
+    (config) => ({command: 'node', args: ['src/index.js'], env: {
+      USER_PRIVATE_KEY: config.userPrivateKey,
+      USER_ADDRESS: config.userAddress,
+      COINGECKO_API_KEY: config.coingeckoApiKey,
+      ...(config.alchemyApiKey ? {ALCHEMY_API_KEY: config.alchemyApiKey} : {})
+    }})
+  configSchema:
+    # JSON Schema defining the configuration options for the MCP.
+    type: object
+    required:
+      - userPrivateKey
+      - userAddress
+      - coingeckoApiKey
+    properties:
+      userPrivateKey:
+        type: string
+        description: Your Ethereum private key for signing transactions
+      userAddress:
+        type: string
+        description: Your Ethereum wallet address
+      coingeckoApiKey:
+        type: string
+        description: Your CoinGecko API key for market data
+      alchemyApiKey:
+        type: string
+        description: Your Alchemy API key for premium RPCs (optional)
+  exampleConfig:
+    userPrivateKey: "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890"
+    userAddress: "0xAbCdEf1234567890aBCdEf1234567890abCDef12"
+    coingeckoApiKey: CG-abcdef1234567890
+    alchemyApiKey: abcd1234efgh5678
