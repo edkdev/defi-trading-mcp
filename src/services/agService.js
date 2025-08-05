@@ -1,9 +1,9 @@
-// src/services/zeroExApiService.js
+// src/services/agService.js
 import fetch from 'node-fetch';
 
-export class ZeroExApiService {
-  constructor(proxyServerUrl) {
-    this.baseUrl = proxyServerUrl;
+export class AgService {
+  constructor(agUrl) {
+    this.baseUrl = agUrl;
   }
 
   async getSwapPrice(params) {

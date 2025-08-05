@@ -46,4 +46,4 @@ export const TOOL_NAMES = {
 };
 
 // Aggregator Server Configuration
-export const AGGREGATOR_SERVER_URL = "http://44.252.136.98";
+export const AG_URL = "http://44.252.136.98";

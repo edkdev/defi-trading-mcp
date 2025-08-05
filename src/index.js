@@ -6,7 +6,7 @@ import {
   ListToolsRequestSchema,
   CallToolRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
-import { TOOL_NAMES, AGGREGATOR_SERVER_URL } from "./constants.js";
+import { TOOL_NAMES, AG_URL } from "./constants.js";
 import { ToolService } from "./toolService.js";
 import { ethers } from "ethers";
 import fs from "fs";
@@ -63,7 +63,7 @@ const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY;
 
 // Initialize tool service with environment variables
 const toolService = new ToolService(
-  AGGREGATOR_SERVER_URL,
+  AG_URL,
   USER_PRIVATE_KEY,
   USER_ADDRESS,
   COINGECKO_API_KEY,
@@ -769,14 +769,14 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       {
         name: TOOL_NAMES.GET_PORTFOLIO_TOKENS,
         description:
-          "Get tokens with balances, prices, and metadata for multiple wallet addresses",
+          "Get tokens with balances, prices, and metadata for wallet addresses (uses USER_ADDRESS from env if addresses not provided)",
         inputSchema: {
           type: "object",
           properties: {
             addresses: {
               type: "array",
               description:
-                "Array of address and networks pairs (max 3 addresses, max 20 networks each)",
+                "Array of address and networks pairs (max 3 addresses, max 20 networks each). Optional - uses USER_ADDRESS from env if not provided",
               items: {
                 type: "object",
                 properties: {
@@ -795,6 +795,14 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
                 },
                 required: ["address", "networks"],
               },
+            },
+            networks: {
+              type: "array",
+              items: {
+                type: "string",
+              },
+              description:
+                "Network identifiers to use with USER_ADDRESS (e.g., 'eth-mainnet', 'base-mainnet'). Only used when addresses not provided. Defaults to ['eth-mainnet', 'base-mainnet']",
             },
             withMetadata: {
               type: "boolean",
@@ -810,20 +818,20 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
                 "Include native tokens like ETH (optional, default: false)",
             },
           },
-          required: ["addresses"],
+          required: [],
         },
       },
       {
         name: TOOL_NAMES.GET_PORTFOLIO_BALANCES,
         description:
-          "Get token balances for multiple wallet addresses (faster, no prices/metadata)",
+          "Get token balances for wallet addresses (faster, no prices/metadata, uses USER_ADDRESS from env if addresses not provided)",
         inputSchema: {
           type: "object",
           properties: {
             addresses: {
               type: "array",
               description:
-                "Array of address and networks pairs (max 3 addresses, max 20 networks each)",
+                "Array of address and networks pairs (max 3 addresses, max 20 networks each). Optional - uses USER_ADDRESS from env if not provided",
               items: {
                 type: "object",
                 properties: {
@@ -843,26 +851,34 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
                 required: ["address", "networks"],
               },
             },
+            networks: {
+              type: "array",
+              items: {
+                type: "string",
+              },
+              description:
+                "Network identifiers to use with USER_ADDRESS (e.g., 'eth-mainnet', 'base-mainnet'). Only used when addresses not provided. Defaults to ['eth-mainnet', 'base-mainnet']",
+            },
             includeNativeTokens: {
               type: "boolean",
               description:
                 "Include native tokens like ETH (optional, default: false)",
             },
           },
-          required: ["addresses"],
+          required: [],
         },
       },
       {
         name: TOOL_NAMES.GET_PORTFOLIO_TRANSACTIONS,
         description:
-          "Get transaction history for a wallet address (BETA: 1 address, ETH/BASE only)",
+          "Get transaction history for a wallet address (BETA: 1 address, ETH/BASE only, uses USER_ADDRESS from env if addresses not provided)",
         inputSchema: {
           type: "object",
           properties: {
             addresses: {
               type: "array",
               description:
-                "Array with single address and networks (BETA limitation: 1 address, max 2 networks)",
+                "Array with single address and networks (BETA limitation: 1 address, max 2 networks). Optional - uses USER_ADDRESS from env if not provided",
               items: {
                 type: "object",
                 properties: {
@@ -884,6 +900,15 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
               },
               maxItems: 1,
             },
+            networks: {
+              type: "array",
+              items: {
+                type: "string",
+                enum: ["eth-mainnet", "base-mainnet"],
+              },
+              description:
+                "Network identifiers to use with USER_ADDRESS (BETA: only eth-mainnet and base-mainnet supported). Only used when addresses not provided. Defaults to ['eth-mainnet', 'base-mainnet']",
+            },
             before: {
               type: "string",
               description:
@@ -902,7 +927,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
               maximum: 50,
             },
           },
-          required: ["addresses"],
+          required: [],
         },
       },
       {
