@@ -2,33 +2,6 @@
 
 Transform your AI assistant into an autonomous crypto trading agent with real-time market analysis, portfolio management, and seamless trade execution across 17+ blockchains.
 
-## 🤖 Trading Agent Capabilities
-
-### **Autonomous Portfolio Management**
-
-- **Multi-chain Portfolio Analysis**: Track balances, prices, and performance across Ethereum, Base, Polygon, Arbitrum, and 14+ other chains
-- **Real-time Portfolio Monitoring**: Get instant updates on your holdings with metadata and price data
-- **Transaction History Tracking**: Complete transaction analysis across all supported networks
-
-### **Intelligent Market Analysis**
-
-- **Market Data Intelligence**: Access real-time token prices, trending pools, and DeFi market conditions
-- **Liquidity Analysis**: Identify the best trading opportunities across multiple DEXes
-- **Token Research**: Get detailed token information, social links, and market metrics
-
-### **Advanced Trade Execution**
-
-- **Smart Price Discovery**: Uses advanced aggregation to find the best prices across all major DEXes
-- **Gasless Trading**: Execute trades without holding ETH for gas fees using meta-transactions
-- **Multi-chain Swaps**: Trade seamlessly across 17+ supported blockchains
-- **Slippage Protection**: Built-in protection against unfavorable price movements
-
-### **Risk Management & Security**
-
-- **Balance Verification**: Automatic balance checks before trade execution
-- **Transaction Simulation**: Preview trades before execution
-- **Secure Key Management**: Private keys never leave your local environment
-
 ## 🎯 Starting Prompt Examples
 
 ### **Simple Quote**
@@ -344,6 +317,13 @@ For other MCP clients like Github Copilot(mcp.json), Gemini Cli (settings.json),
   }
 }
 ```
+
+## 🤖 Trading Agent Capabilities
+
+### **Autonomous Portfolio Management**
+### **Intelligent Market Analysis**
+### **Advanced Trade Execution**
+### **Risk Management & Security**
 
 ## 🛠️ Trading Agent Tools
 
