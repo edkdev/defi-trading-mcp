@@ -1,5 +1,6 @@
 // src/toolService.js
 import { AgService } from "./services/agService.js";
+import { SwapApiService } from "./services/swapApiService.js";
 import { CoinGeckoApiService } from "./services/coinGeckoApiService.js";
 import { BlockchainService } from "./services/blockchainService.js";
 import { ethers } from "ethers";
@@ -10,13 +11,28 @@ export class ToolService {
     userPrivateKey,
     userAddress,
     coinGeckoApiKey,
-    alchemyApiKey
+    alchemyApiKey,
+    swapProvider = "0x",
+    swapApiBaseUrl
   ) {
     this.agg = new AgService(agUrl);
+    this.swapApi = new SwapApiService(swapApiBaseUrl);
+    this.swapProvider = swapProvider;
     this.coinGeckoApi = new CoinGeckoApiService(coinGeckoApiKey);
     this.blockchain = new BlockchainService(userPrivateKey, alchemyApiKey);
     this.userPrivateKey = userPrivateKey;
     this.userAddress = userAddress;
+
+    if (this.swapProvider === "swapapi") {
+      console.error("Swap provider: SwapAPI (https://api.swapapi.dev)");
+    }
+  }
+
+  /**
+   * Returns the active swap service based on the configured provider.
+   */
+  _getSwapService() {
+    return this.swapProvider === "swapapi" ? this.swapApi : this.agg;
   }
 
   async getSwapPrice(params) {
@@ -29,7 +45,8 @@ export class ToolService {
       );
     }
 
-    const result = await this.agg.getSwapPrice(params);
+    const swapService = this._getSwapService();
+    const result = await swapService.getSwapPrice(params);
 
     return {
       message: "Swap price retrieved successfully",
@@ -53,7 +70,8 @@ export class ToolService {
       taker: params.taker || this.userAddress,
     };
 
-    const result = await this.agg.getSwapQuote(quoteParams);
+    const swapService = this._getSwapService();
+    const result = await swapService.getSwapQuote(quoteParams);
 
     // Add chainId to the result for executeSwap to use
     result.chainId = chainId;
@@ -109,7 +127,8 @@ export class ToolService {
   }
 
   async getSupportedChains() {
-    const result = await this.agg.getSupportedChains();
+    const swapService = this._getSwapService();
+    const result = await swapService.getSupportedChains();
 
     return {
       message: "Supported chains retrieved successfully",
@@ -123,7 +142,8 @@ export class ToolService {
       throw new Error("chainId is required");
     }
 
-    const result = await this.agg.getLiquiditySources(chainId);
+    const swapService = this._getSwapService();
+    const result = await swapService.getLiquiditySources(chainId);
 
     return {
       message: `Liquidity sources for chain ${chainId} retrieved successfully`,

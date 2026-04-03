@@ -6,7 +6,7 @@ import {
   ListToolsRequestSchema,
   CallToolRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
-import { TOOL_NAMES, AG_URL } from "./constants.js";
+import { TOOL_NAMES, AG_URL, SWAP_PROVIDER, SWAPAPI_BASE_URL } from "./constants.js";
 import { ToolService } from "./toolService.js";
 import { ethers } from "ethers";
 import fs from "fs";
@@ -67,7 +67,9 @@ const toolService = new ToolService(
   USER_PRIVATE_KEY,
   USER_ADDRESS,
   COINGECKO_API_KEY,
-  ALCHEMY_API_KEY
+  ALCHEMY_API_KEY,
+  SWAP_PROVIDER,
+  SWAPAPI_BASE_URL
 );
 
 const server = new Server(

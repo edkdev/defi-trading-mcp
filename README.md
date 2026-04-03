@@ -85,6 +85,39 @@ This generates a new wallet with private key and address for secure trading.
 ### **Optional Configuration**
 
 - `ALCHEMY_API_KEY`: Add an Alchemy API key to use your own RPCs, otherwise public rpcs will be used.
+- `SWAP_PROVIDER`: Set to `"swapapi"` to use [SwapAPI](https://swapapi.dev) as the swap provider instead of the default aggregator. SwapAPI supports 46 EVM chains and requires no API key. Default: `"0x"`.
+
+### **SwapAPI Provider**
+
+[SwapAPI](https://swapapi.dev) is an alternative swap provider that returns ready-to-sign calldata via a single GET request. No auth, no SDK, no accounts.
+
+**To enable:**
+
+Set the `SWAP_PROVIDER` environment variable to `"swapapi"` in your MCP configuration:
+
+```json
+{
+  "mcpServers": {
+    "defi-trading": {
+      "command": "npx",
+      "args": ["defi-trading-mcp"],
+      "env": {
+        "USER_PRIVATE_KEY": "your_private_key_here",
+        "USER_ADDRESS": "0xYourWalletAddress",
+        "COINGECKO_API_KEY": "CG-your_coingecko_api_key",
+        "SWAP_PROVIDER": "swapapi"
+      }
+    }
+  }
+}
+```
+
+**SwapAPI features:**
+- 46 EVM chains supported
+- No API key required
+- Native token address: `0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE`
+- Returns ready-to-sign tx calldata
+- [API docs](https://swapapi.dev/llms.txt) | [GitHub](https://github.com/swap-api/swap-api)
 
 ### **🔧 Premium RPC Integration**
 

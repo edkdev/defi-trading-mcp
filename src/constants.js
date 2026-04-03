@@ -47,3 +47,9 @@ export const TOOL_NAMES = {
 
 // Aggregator Server Configuration
 export const AG_URL = "http://44.252.136.98";
+
+// SwapAPI Configuration
+export const SWAPAPI_BASE_URL = "https://api.swapapi.dev";
+
+// Swap provider selection: "0x" (default) or "swapapi"
+export const SWAP_PROVIDER = process.env.SWAP_PROVIDER || "0x";
