@@ -67,7 +67,7 @@ npm install -g defi-trading-mcp
 ### **Create a New Wallet (Recommended)**
 
 ```bash
-npx defi-trading-mcp --create-wallet
+npx defi-trading-mcp@latest --create-wallet
 ```
 
 This generates a new wallet with private key and address for secure trading.
@@ -124,7 +124,7 @@ Add to `~/.kiro/settings/mcp.json`:
   "mcpServers": {
     "defi-trading": {
       "command": "npx",
-      "args": ["defi-trading-mcp"],
+      "args": ["defi-trading-mcp@latest"],
       "env": {
         "USER_PRIVATE_KEY": "your_private_key_here",
         "USER_ADDRESS": "0xYourWalletAddress",
@@ -156,7 +156,7 @@ claude mcp add defi-trading \
   -e USER_ADDRESS=0xYourWalletAddress \
   -e COINGECKO_API_KEY=CG-your_coingecko_api_key \
   -e ALCHEMY_API_KEY=your_alchemy_api_key \
-  -- npx defi-trading-mcp
+  -- npx defi-trading-mcp@latest
 ```
 
 **For Windows (native, not WSL):**
@@ -167,7 +167,7 @@ claude mcp add defi-trading \
   -e USER_ADDRESS=0xYourWalletAddress \
   -e COINGECKO_API_KEY=CG-your_coingecko_api_key \
   -e ALCHEMY_API_KEY=your_alchemy_api_key \
-  -- cmd /c npx defi-trading-mcp
+  -- cmd /c npx defi-trading-mcp@latest
 ```
 
 > **Windows Note**: The `cmd /c` wrapper is required on native Windows to prevent "Connection closed" errors when using npx.
@@ -191,7 +191,7 @@ claude mcp add defi-trading \
   -e USER_ADDRESS=0xYourNewWalletAddress \
   -e COINGECKO_API_KEY=CG-your_coingecko_api_key \
   -e ALCHEMY_API_KEY=your_alchemy_api_key \
-  -- npx defi-trading-mcp
+  -- npx defi-trading-mcp@latest
 ```
 
 **Step 5: Start using the trading agent**
@@ -222,7 +222,7 @@ Then add the following.
   "mcpServers": {
     "defi-trading": {
       "command": "npx",
-      "args": ["defi-trading-mcp"],
+      "args": ["defi-trading-mcp@latest"],
       "env": {
         "USER_PRIVATE_KEY": "your_private_key_here",
         "USER_ADDRESS": "0xYourWalletAddress",
@@ -269,7 +269,7 @@ npm install -g defi-trading-mcp
 {
   "defi-trading": {
     "command": "npx",
-    "args": ["defi-trading-mcp"],
+    "args": ["defi-trading-mcp@latest"],
     "env": {
       "USER_PRIVATE_KEY": "your_private_key_here",
       "USER_ADDRESS": "0xYourWalletAddress",
@@ -306,7 +306,7 @@ For other MCP clients like Github Copilot(mcp.json), Gemini Cli (settings.json),
   "mcpServers": {
     "defi-trading": {
       "command": "npx",
-      "args": ["defi-trading-mcp"],
+      "args": ["defi-trading-mcp@latest"],
       "env": {
         "USER_PRIVATE_KEY": "your_private_key_here",
         "USER_ADDRESS": "0xYourWalletAddress",
