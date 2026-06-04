@@ -50,7 +50,7 @@ if (args.includes("--create-wallet")) {
   console.log(`  -e USER_ADDRESS=${wallet.address} \\`);
   console.log(`  -e COINGECKO_API_KEY=your_coingecko_api_key \\`);
   console.log(`  -e ALCHEMY_API_KEY=your_alchemy_api_key \\`);
-  console.log(`  -- npx defi-trading-mcp`);
+  console.log(`  -- npx defi-trading-mcp@latest`);
 
   process.exit(0);
 }
