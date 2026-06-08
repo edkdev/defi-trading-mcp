@@ -9,13 +9,34 @@ import {
 import { TOOL_NAMES, AG_URL } from "./constants.js";
 import { ToolService } from "./toolService.js";
 import { ethers } from "ethers";
+import { createRequire } from "node:module";
 import fs from "fs";
 import path from "path";
 import os from "os";
 import "dotenv/config";
 
+const require = createRequire(import.meta.url);
+const packageJson = require("../package.json");
+
 // Handle command line arguments
 const args = process.argv.slice(2);
+
+if (args.includes("--version") || args.includes("-v")) {
+  console.log(packageJson.version);
+  process.exit(0);
+}
+
+if (args.includes("--help") || args.includes("-h")) {
+  console.log(`Usage: defi-trading-mcp [options]
+
+Options:
+  -v, --version       Print the package version.
+  -h, --help          Print this help message.
+  --create-wallet     Generate a new Ethereum wallet for MCP configuration.
+
+Run without options to start the DeFi Trading MCP server over stdio.`);
+  process.exit(0);
+}
 
 // Check for wallet creation command
 if (args.includes("--create-wallet")) {
@@ -73,7 +94,7 @@ const toolService = new ToolService(
 const server = new Server(
   {
     name: "Defi-trading-mcp",
-    version: "1.0.0",
+    version: packageJson.version,
   },
   {
     capabilities: {
