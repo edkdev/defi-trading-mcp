@@ -5,6 +5,39 @@ export class CoinGeckoApiService {
   constructor(apiKey) {
     this.baseUrl = 'https://api.coingecko.com/api/v3/onchain';
     this.apiKey = apiKey;
+    // Determine API key type based on key format
+    // Pro API keys are typically longer and use different header
+    this.apiKeyHeader = this.detectApiKeyType(apiKey);
+  }
+
+  /**
+   * Detects whether the API key is a demo or pro key
+   * Demo keys use 'x-cg-demo-api-key' header
+   * Pro keys use 'x-cg-pro-api-key' header
+   * @param {string} apiKey - The CoinGecko API key
+   * @returns {string} The appropriate header name
+   */
+  detectApiKeyType(apiKey) {
+    if (!apiKey) return 'x-cg-demo-api-key';
+    
+    // Pro API keys are typically 32+ characters and alphanumeric
+    // Demo keys are typically shorter (around 20-30 chars)
+    // This is a heuristic - users can override if needed
+    const isProKey = apiKey.length >= 32 && /^[a-zA-Z0-9]+$/.test(apiKey);
+    
+    return isProKey ? 'x-cg-pro-api-key' : 'x-cg-demo-api-key';
+  }
+
+  /**
+   * Gets the headers for CoinGecko API requests
+   * @returns {Object} Headers object with appropriate API key header
+   */
+  getHeaders() {
+    const headers = {};
+    if (this.apiKey) {
+      headers[this.apiKeyHeader] = this.apiKey;
+    }
+    return headers;
   }
 
   async getTokenPrice(network, addresses, options = {}) {
@@ -21,9 +54,7 @@ export class CoinGeckoApiService {
       const url = `${this.baseUrl}/simple/networks/${network}/token_price/${addresses}${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
       
       const response = await fetch(url, {
-        headers: {
-          'x-cg-demo-api-key': this.apiKey
-        }
+        headers: this.getHeaders()
       });
       
       if (!response.ok) {
@@ -44,9 +75,7 @@ export class CoinGeckoApiService {
       const url = `${this.baseUrl}/networks${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
       
       const response = await fetch(url, {
-        headers: {
-          'x-cg-demo-api-key': this.apiKey
-        }
+        headers: this.getHeaders()
       });
       
       if (!response.ok) {
@@ -59,17 +88,12 @@ export class CoinGeckoApiService {
     }
   }
 
-  async getSupportedDexes(network, page = 1) {
+  async getSupportedDexes(network) {
     try {
-      const queryParams = new URLSearchParams();
-      if (page) queryParams.append('page', page);
-
-      const url = `${this.baseUrl}/networks/${network}/dexes${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+      const url = `${this.baseUrl}/networks/${network}/dexes`;
       
       const response = await fetch(url, {
-        headers: {
-          'x-cg-demo-api-key': this.apiKey
-        }
+        headers: this.getHeaders()
       });
       
       if (!response.ok) {
@@ -82,20 +106,16 @@ export class CoinGeckoApiService {
     }
   }
 
-  async getTrendingPools(options = {}) {
+  async getTrendingPools(duration = '24h', options = {}) {
     try {
       const queryParams = new URLSearchParams();
-      
-      if (options.include) queryParams.append('include', options.include);
+      if (duration) queryParams.append('duration', duration);
       if (options.page) queryParams.append('page', options.page);
-      if (options.duration) queryParams.append('duration', options.duration);
 
-      const url = `${this.baseUrl}/networks/trending_pools${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+      const url = `${this.baseUrl}/trending_pools${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
       
       const response = await fetch(url, {
-        headers: {
-          'x-cg-demo-api-key': this.apiKey
-        }
+        headers: this.getHeaders()
       });
       
       if (!response.ok) {
@@ -108,20 +128,16 @@ export class CoinGeckoApiService {
     }
   }
 
-  async getTrendingPoolsByNetwork(network, options = {}) {
+  async getTrendingPoolsByNetwork(network, duration = '24h', options = {}) {
     try {
       const queryParams = new URLSearchParams();
-      
-      if (options.include) queryParams.append('include', options.include);
+      if (duration) queryParams.append('duration', duration);
       if (options.page) queryParams.append('page', options.page);
-      if (options.duration) queryParams.append('duration', options.duration);
 
       const url = `${this.baseUrl}/networks/${network}/trending_pools${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
       
       const response = await fetch(url, {
-        headers: {
-          'x-cg-demo-api-key': this.apiKey
-        }
+        headers: this.getHeaders()
       });
       
       if (!response.ok) {
@@ -134,19 +150,21 @@ export class CoinGeckoApiService {
     }
   }
 
-  async getMultiplePoolsData(network, addresses, options = {}) {
+  async getMultiplePoolsData(poolAddresses, options = {}) {
     try {
       const queryParams = new URLSearchParams();
       
-      if (options.include) queryParams.append('include', options.include);
-      if (options.include_volume_breakdown) queryParams.append('include_volume_breakdown', options.include_volume_breakdown);
+      // Add optional parameters
+      if (options.include_market_cap) queryParams.append('include_market_cap', options.include_market_cap);
+      if (options.mcap_fdv_fallback) queryParams.append('mcap_fdv_fallback', options.mcap_fdv_fallback);
+      if (options.include_24hr_vol) queryParams.append('include_24hr_vol', options.include_24hr_vol);
+      if (options.include_24hr_price_change) queryParams.append('include_24hr_price_change', options.include_24hr_price_change);
+      if (options.include_total_reserve_in_usd) queryParams.append('include_total_reserve_in_usd', options.include_total_reserve_in_usd);
 
-      const url = `${this.baseUrl}/networks/${network}/pools/multi/${addresses}${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+      const url = `${this.baseUrl}/pools/${poolAddresses}${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
       
       const response = await fetch(url, {
-        headers: {
-          'x-cg-demo-api-key': this.apiKey
-        }
+        headers: this.getHeaders()
       });
       
       if (!response.ok) {
@@ -162,17 +180,17 @@ export class CoinGeckoApiService {
   async getTopPoolsByDex(network, dex, options = {}) {
     try {
       const queryParams = new URLSearchParams();
-      
-      if (options.include) queryParams.append('include', options.include);
       if (options.page) queryParams.append('page', options.page);
-      if (options.sort) queryParams.append('sort', options.sort);
+      if (options.include_market_cap) queryParams.append('include_market_cap', options.include_market_cap);
+      if (options.mcap_fdv_fallback) queryParams.append('mcap_fdv_fallback', options.mcap_fdv_fallback);
+      if (options.include_24hr_vol) queryParams.append('include_24hr_vol', options.include_24hr_vol);
+      if (options.include_24hr_price_change) queryParams.append('include_24hr_price_change', options.include_24hr_price_change);
+      if (options.include_total_reserve_in_usd) queryParams.append('include_total_reserve_in_usd', options.include_total_reserve_in_usd);
 
       const url = `${this.baseUrl}/networks/${network}/dexes/${dex}/pools${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
       
       const response = await fetch(url, {
-        headers: {
-          'x-cg-demo-api-key': this.apiKey
-        }
+        headers: this.getHeaders()
       });
       
       if (!response.ok) {
@@ -185,19 +203,15 @@ export class CoinGeckoApiService {
     }
   }
 
-  async getNewPools(options = {}) {
+  async getNewPools(network, options = {}) {
     try {
       const queryParams = new URLSearchParams();
-      
-      if (options.include) queryParams.append('include', options.include);
       if (options.page) queryParams.append('page', options.page);
 
-      const url = `${this.baseUrl}/networks/new_pools${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+      const url = `${this.baseUrl}/networks/${network}/new_pools${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
       
       const response = await fetch(url, {
-        headers: {
-          'x-cg-demo-api-key': this.apiKey
-        }
+        headers: this.getHeaders()
       });
       
       if (!response.ok) {
@@ -210,21 +224,16 @@ export class CoinGeckoApiService {
     }
   }
 
-  async searchPools(query, options = {}) {
+  async searchPools(query, network, options = {}) {
     try {
       const queryParams = new URLSearchParams();
-      
-      if (query) queryParams.append('query', query);
-      if (options.network) queryParams.append('network', options.network);
-      if (options.include) queryParams.append('include', options.include);
+      queryParams.append('query', query);
       if (options.page) queryParams.append('page', options.page);
 
-      const url = `${this.baseUrl}/search/pools${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+      const url = `${this.baseUrl}/networks/${network}/pools/search${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
       
       const response = await fetch(url, {
-        headers: {
-          'x-cg-demo-api-key': this.apiKey
-        }
+        headers: this.getHeaders()
       });
       
       if (!response.ok) {
@@ -237,21 +246,15 @@ export class CoinGeckoApiService {
     }
   }
 
-  // Additional endpoints from coingeckoendpoints-2.txt
   async getTopPoolsByToken(network, tokenAddress, options = {}) {
     try {
       const queryParams = new URLSearchParams();
-      
-      if (options.include) queryParams.append('include', options.include);
       if (options.page) queryParams.append('page', options.page);
-      if (options.sort) queryParams.append('sort', options.sort);
 
       const url = `${this.baseUrl}/networks/${network}/tokens/${tokenAddress}/pools${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
       
       const response = await fetch(url, {
-        headers: {
-          'x-cg-demo-api-key': this.apiKey
-        }
+        headers: this.getHeaders()
       });
       
       if (!response.ok) {
@@ -264,18 +267,19 @@ export class CoinGeckoApiService {
     }
   }
 
-  async getTokenData(network, address, options = {}) {
+  async getTokenData(network, tokenAddress, options = {}) {
     try {
       const queryParams = new URLSearchParams();
-      
-      if (options.include) queryParams.append('include', options.include);
+      if (options.include_market_cap) queryParams.append('include_market_cap', options.include_market_cap);
+      if (options.mcap_fdv_fallback) queryParams.append('mcap_fdv_fallback', options.mcap_fdv_fallback);
+      if (options.include_24hr_vol) queryParams.append('include_24hr_vol', options.include_24hr_vol);
+      if (options.include_24hr_price_change) queryParams.append('include_24hr_price_change', options.include_24hr_price_change);
+      if (options.include_total_reserve_in_usd) queryParams.append('include_total_reserve_in_usd', options.include_total_reserve_in_usd);
 
-      const url = `${this.baseUrl}/networks/${network}/tokens/${address}${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+      const url = `${this.baseUrl}/networks/${network}/tokens/${tokenAddress}${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
       
       const response = await fetch(url, {
-        headers: {
-          'x-cg-demo-api-key': this.apiKey
-        }
+        headers: this.getHeaders()
       });
       
       if (!response.ok) {
@@ -288,18 +292,19 @@ export class CoinGeckoApiService {
     }
   }
 
-  async getMultipleTokensData(network, addresses, options = {}) {
+  async getMultipleTokensData(network, tokenAddresses, options = {}) {
     try {
       const queryParams = new URLSearchParams();
-      
-      if (options.include) queryParams.append('include', options.include);
+      if (options.include_market_cap) queryParams.append('include_market_cap', options.include_market_cap);
+      if (options.mcap_fdv_fallback) queryParams.append('mcap_fdv_fallback', options.mcap_fdv_fallback);
+      if (options.include_24hr_vol) queryParams.append('include_24hr_vol', options.include_24hr_vol);
+      if (options.include_24hr_price_change) queryParams.append('include_24hr_price_change', options.include_24hr_price_change);
+      if (options.include_total_reserve_in_usd) queryParams.append('include_total_reserve_in_usd', options.include_total_reserve_in_usd);
 
-      const url = `${this.baseUrl}/networks/${network}/tokens/multi/${addresses}${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+      const url = `${this.baseUrl}/networks/${network}/tokens/multi/${tokenAddresses}${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
       
       const response = await fetch(url, {
-        headers: {
-          'x-cg-demo-api-key': this.apiKey
-        }
+        headers: this.getHeaders()
       });
       
       if (!response.ok) {
@@ -312,14 +317,12 @@ export class CoinGeckoApiService {
     }
   }
 
-  async getTokenInfo(network, address) {
+  async getTokenInfo(network, tokenAddress) {
     try {
-      const url = `${this.baseUrl}/networks/${network}/tokens/${address}/info`;
+      const url = `${this.baseUrl}/networks/${network}/tokens/${tokenAddress}/info`;
       
       const response = await fetch(url, {
-        headers: {
-          'x-cg-demo-api-key': this.apiKey
-        }
+        headers: this.getHeaders()
       });
       
       if (!response.ok) {
@@ -332,19 +335,16 @@ export class CoinGeckoApiService {
     }
   }
 
-  async getRecentlyUpdatedTokens(options = {}) {
+  async getRecentlyUpdatedTokens(network, options = {}) {
     try {
       const queryParams = new URLSearchParams();
-      
-      if (options.include) queryParams.append('include', options.include);
-      if (options.network) queryParams.append('network', options.network);
+      if (options.page) queryParams.append('page', options.page);
+      if (options.duration) queryParams.append('duration', options.duration);
 
-      const url = `${this.baseUrl}/tokens/info_recently_updated${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+      const url = `${this.baseUrl}/networks/${network}/tokens/recently_updated${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
       
       const response = await fetch(url, {
-        headers: {
-          'x-cg-demo-api-key': this.apiKey
-        }
+        headers: this.getHeaders()
       });
       
       if (!response.ok) {
@@ -360,20 +360,14 @@ export class CoinGeckoApiService {
   async getPoolOHLCV(network, poolAddress, timeframe, options = {}) {
     try {
       const queryParams = new URLSearchParams();
-      
-      if (options.aggregate) queryParams.append('aggregate', options.aggregate);
-      if (options.before_timestamp) queryParams.append('before_timestamp', options.before_timestamp);
+      queryParams.append('timeframe', timeframe);
+      if (options.page) queryParams.append('page', options.page);
       if (options.limit) queryParams.append('limit', options.limit);
-      if (options.currency) queryParams.append('currency', options.currency);
-      if (options.token) queryParams.append('token', options.token);
-      if (options.include_empty_intervals) queryParams.append('include_empty_intervals', options.include_empty_intervals);
 
-      const url = `${this.baseUrl}/networks/${network}/pools/${poolAddress}/ohlcv/${timeframe}${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+      const url = `${this.baseUrl}/networks/${network}/pools/${poolAddress}/ohlcv${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
       
       const response = await fetch(url, {
-        headers: {
-          'x-cg-demo-api-key': this.apiKey
-        }
+        headers: this.getHeaders()
       });
       
       if (!response.ok) {
@@ -389,15 +383,14 @@ export class CoinGeckoApiService {
   async getPoolTrades(network, poolAddress, options = {}) {
     try {
       const queryParams = new URLSearchParams();
-      
+      if (options.page) queryParams.append('page', options.page);
+      if (options.limit) queryParams.append('limit', options.limit);
       if (options.trade_volume_in_usd_greater_than) queryParams.append('trade_volume_in_usd_greater_than', options.trade_volume_in_usd_greater_than);
 
       const url = `${this.baseUrl}/networks/${network}/pools/${poolAddress}/trades${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
       
       const response = await fetch(url, {
-        headers: {
-          'x-cg-demo-api-key': this.apiKey
-        }
+        headers: this.getHeaders()
       });
       
       if (!response.ok) {
