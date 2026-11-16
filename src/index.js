@@ -990,6 +990,26 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           required: ["amount", "decimals"],
         },
       },
+      {
+        name: TOOL_NAMES.CHECK_TOKEN_SECURITY,
+        description:
+          "Inspect pool liquidity, pricing, and optional honeypot/ownership flags for Base, Ethereum, or Solana tokens before executing a swap",
+        inputSchema: {
+          type: "object",
+          properties: {
+            chain: {
+              type: "string",
+              enum: ["base", "ethereum", "solana"],
+              description: "Target blockchain network (default: base)",
+            },
+            address: {
+              type: "string",
+              description: "Token contract address (0x...) or Solana SPL mint",
+            },
+          },
+          required: ["address"],
+        },
+      },
     ],
   };
 });
@@ -1198,6 +1218,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       case TOOL_NAMES.CONVERT_FORMATTED_TO_WEI:
         result = await toolService.convertFormattedToWei(args);
+        break;
+
+      case TOOL_NAMES.CHECK_TOKEN_SECURITY:
+        result = await toolService.checkTokenSecurity(args);
         break;
 
       default:

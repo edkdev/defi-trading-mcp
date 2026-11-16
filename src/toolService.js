@@ -805,4 +805,47 @@ export class ToolService {
       throw new Error(`Formatted to wei conversion failed: ${error.message}`);
     }
   }
+
+  async checkTokenSecurity(params = {}) {
+    const chain = String(params.chain || "base").trim().toLowerCase();
+    const address = String(params.address || "").trim();
+
+    if (!["base", "ethereum", "solana"].includes(chain)) {
+      throw new Error("Unsupported chain. Use 'base', 'ethereum', or 'solana'.");
+    }
+    const isValidAddr =
+      chain === "solana"
+        ? /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(address)
+        : /^0x[a-fA-F0-9]{40}$/.test(address);
+    if (!isValidAddr) {
+      throw new Error(`Invalid ${chain} token address: ${address}`);
+    }
+
+    const aegisKey = process.env.AEGIS_API_KEY || "";
+    const baseUrl = "https://aegisaudit.org";
+    const endpoint = aegisKey
+      ? `${baseUrl}/api/v1/token/audit/${encodeURIComponent(chain)}/${encodeURIComponent(address)}`
+      : `${baseUrl}/api/v1/token/preview/${encodeURIComponent(chain)}/${encodeURIComponent(address)}`;
+
+    const headers = { Accept: "application/json" };
+    if (aegisKey) {
+      headers["x-api-key"] = aegisKey;
+    }
+
+    const res = await fetch(endpoint, {
+      headers,
+      signal: AbortSignal.timeout(8000),
+    });
+    if (!res.ok) {
+      throw new Error(`Security check returned HTTP ${res.status}`);
+    }
+    const report = await res.json();
+    return {
+      message: aegisKey
+        ? "Full token security and honeypot report retrieved"
+        : "Free pre-swap pool & market safety preview retrieved",
+      data: report,
+      fullAuditCheckoutUrl: `${baseUrl}/pay?chain=${encodeURIComponent(chain)}&address=${encodeURIComponent(address)}&sku=audit`,
+    };
+  }
 }

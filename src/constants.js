@@ -43,6 +43,9 @@ export const TOOL_NAMES = {
   // Conversion Utility Tools
   CONVERT_WEI_TO_FORMATTED: "convert_wei_to_formatted",
   CONVERT_FORMATTED_TO_WEI: "convert_formatted_to_wei",
+
+  // Pre-Trade Token Security Inspection
+  CHECK_TOKEN_SECURITY: "check_token_security",
 };
 
 // Aggregator Server Configuration
